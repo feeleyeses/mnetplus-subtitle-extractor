@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Mnet Plus Subtitle Downloader</title>
+  <style>
+    body{margin:0;width:360px;background:#111;color:#fff;font-family:Arial,"Microsoft YaHei",sans-serif}
+    .wrap{padding:16px}
+    h1{font-size:18px;margin:0 0 8px}
+    .title{font-size:12px;line-height:1.5;color:#bbb;margin-bottom:12px;max-height:56px;overflow:auto}
+    .track{display:flex;gap:10px;align-items:flex-start;padding:10px 0;border-top:1px solid #2d2d2d}
+    .track input{margin-top:3px}
+    .label{font-size:14px}.meta{font-size:11px;color:#999;margin-top:3px}.ai{color:#ff72b2;margin-left:6px}
+    .status{margin-top:12px;padding:10px;background:#1c1c1c;border-radius:8px;font-size:12px;white-space:pre-wrap;display:none}
+    button{width:100%;margin-top:14px;border:0;border-radius:10px;padding:10px;background:#ff1f8f;color:#fff;font-weight:700;cursor:pointer}
+    button:disabled{opacity:.5;cursor:default}
+    .error{color:#ff8a8a;font-size:12px;line-height:1.5}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <h1>Mnet Plus 字幕下载</h1>
+    <div id="title" class="title">正在识别当前视频…</div>
+    <div id="tracks"></div>
+    <div id="status" class="status"></div>
+    <div id="error" class="error"></div>
+    <button id="download" disabled>下载选中字幕</button>
+  </div>
+  <script src="popup.js"></script>
+</body>
+</html>
