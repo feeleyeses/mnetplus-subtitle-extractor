@@ -5,17 +5,25 @@
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <title>Mnet Plus Subtitle Downloader</title>
   <style>
-    body{margin:0;width:360px;background:#111;color:#fff;font-family:Arial,"Microsoft YaHei",sans-serif}
+    body{margin:0;width:380px;background:#111;color:#fff;font-family:Arial,"Microsoft YaHei",sans-serif}
     .wrap{padding:16px}
     h1{font-size:18px;margin:0 0 8px}
     .title{font-size:12px;line-height:1.5;color:#bbb;margin-bottom:12px;max-height:56px;overflow:auto}
     .track{display:flex;gap:10px;align-items:flex-start;padding:10px 0;border-top:1px solid #2d2d2d}
     .track input{margin-top:3px}
     .label{font-size:14px}.meta{font-size:11px;color:#999;margin-top:3px}.ai{color:#ff72b2;margin-left:6px}
-    .status{margin-top:12px;padding:10px;background:#1c1c1c;border-radius:8px;font-size:12px;white-space:pre-wrap;display:none}
-    button{width:100%;margin-top:14px;border:0;border-radius:10px;padding:10px;background:#ff1f8f;color:#fff;font-weight:700;cursor:pointer}
+    .status{margin-top:12px;padding:10px;background:#1c1c1c;border-radius:8px;font-size:12px;white-space:pre-wrap;display:none;line-height:1.5}
+    button{border:0;border-radius:10px;padding:10px;background:#ff1f8f;color:#fff;font-weight:700;cursor:pointer}
     button:disabled{opacity:.5;cursor:default}
-    .error{color:#ff8a8a;font-size:12px;line-height:1.5}
+    #prepare{width:100%;margin-top:14px}
+    .error{color:#ff8a8a;font-size:12px;line-height:1.5;margin-top:8px}
+    .section-title{font-size:13px;font-weight:700;margin:18px 0 6px;color:#ddd}
+    .empty{margin-top:14px;padding:10px;border:1px dashed #333;border-radius:9px;color:#777;font-size:12px}
+    .prepared-item{display:flex;align-items:center;gap:10px;padding:10px 0;border-top:1px solid #2d2d2d}
+    .prepared-body{flex:1;min-width:0}
+    .filename{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:270px}
+    .save-one{width:auto;flex:0 0 auto;padding:8px 12px;font-size:12px}
+    .hint{font-size:11px;line-height:1.5;color:#777;margin-top:10px}
   </style>
 </head>
 <body>
@@ -25,7 +33,9 @@
     <div id="tracks"></div>
     <div id="status" class="status"></div>
     <div id="error" class="error"></div>
-    <button id="download" disabled>下载选中字幕</button>
+    <button id="prepare" disabled>生成选中字幕</button>
+    <div class="hint">字幕默认不勾选。先生成，再在下方逐个保存；即使系统保存窗口点了取消，当前页面未刷新前仍可再次保存。</div>
+    <div id="prepared"></div>
   </div>
   <script src="popup.js"></script>
 </body>
