@@ -38,18 +38,18 @@ echo Downloading subtitles...
 echo.
 
 python "%~dp0mnetplus_subs.py" "%VIDEO_URL%" --langs ko,en,zh_CN --out-dir "%~dp0subtitles"
-
-if errorlevel 1 (
-    echo.
-    echo ==========================================
-    echo Download failed.
-    echo Please check the URL and network connection.
-    echo ==========================================
-    pause
-    exit /b 1
-)
+set EXITCODE=%ERRORLEVEL%
 
 echo.
+if not "%EXITCODE%"=="0" (
+    echo ==========================================
+    echo Download failed. Error details are shown above.
+    echo Please take a screenshot of the full window if you need help.
+    echo ==========================================
+    pause
+    exit /b %EXITCODE%
+)
+
 echo ==========================================
 echo Done!
 echo Subtitles saved to:
@@ -58,5 +58,4 @@ echo ==========================================
 echo.
 
 explorer "%~dp0subtitles"
-
 pause
