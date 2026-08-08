@@ -14,6 +14,7 @@ import time
 import urllib.error
 import urllib.parse
 import urllib.request
+import uuid
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any, Iterable
@@ -21,9 +22,10 @@ from typing import Any, Iterable
 API_BASE = "https://api.mnetplus.world/media/v1/public"
 DEFAULT_UA = (
     "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
-    "AppleWebKit/537.36 (KHTML, like Gecko) Chrome/151 Safari/537.36"
+    "AppleWebKit/537.36 (KHTML, like Gecko) Chrome/151.0.0.0 Safari/537.36"
 )
 VIDEO_ID_RE = re.compile(r"^[0-9a-fA-F]{24}$")
+SESSION_ID = str(uuid.uuid4())
 
 
 class MnetPlusError(RuntimeError):
@@ -56,25 +58,59 @@ def extract_video_id(value: str) -> str:
     raise MnetPlusError("Could not find a 24-character Mnet Plus video ID in the input.")
 
 
-def request_json(url: str, *, timeout: float = 20.0, retries: int = 3) -> dict[str, Any]:
-    headers = {
+def browser_headers() -> dict[str, str]:
+    return {
         "User-Agent": DEFAULT_UA,
-        "Accept": "application/json, text/plain, */*",
+        "Accept": "*/*",
+        "Accept-Language": "zh-CN,zh;q=0.9,en;q=0.8,ko;q=0.7",
+        "Cache-Control": "no-cache",
+        "Pragma": "no-cache",
         "Origin": "https://mnetplus.world",
         "Referer": "https://mnetplus.world/",
+        "Sec-CH-UA": '"Not=A?Brand";v="99", "Google Chrome";v="151", "Chromium";v="151"',
+        "Sec-CH-UA-Mobile": "?0",
+        "Sec-CH-UA-Platform": '"Windows"',
+        "Sec-Fetch-Dest": "empty",
+        "Sec-Fetch-Mode": "cors",
+        "Sec-Fetch-Site": "same-site",
+        "X-Lang-Country": "zh:CN",
+        "X-User-Agent": f"zh:CN::WEB:Chrome:::{SESSION_ID}",
     }
+
+
+def request_json(url: str, *, timeout: float = 20.0, retries: int = 3) -> dict[str, Any]:
     last_error: Exception | None = None
+    details = ""
+
     for attempt in range(retries):
         try:
-            req = urllib.request.Request(url, headers=headers)
+            req = urllib.request.Request(url, headers=browser_headers())
             with urllib.request.urlopen(req, timeout=timeout) as resp:
                 charset = resp.headers.get_content_charset() or "utf-8"
                 return json.loads(resp.read().decode(charset))
-        except (urllib.error.URLError, urllib.error.HTTPError, TimeoutError, json.JSONDecodeError) as exc:
+        except urllib.error.HTTPError as exc:
             last_error = exc
-            if attempt + 1 < retries:
-                time.sleep(0.6 * (attempt + 1))
-    raise MnetPlusError(f"Request failed after {retries} attempts: {url}\n{last_error}")
+            try:
+                body = exc.read().decode("utf-8", errors="replace")
+            except Exception:
+                body = ""
+            details = f"HTTP {exc.code} {exc.reason}" + (f"\nResponse: {body[:800]}" if body else "")
+        except urllib.error.URLError as exc:
+            last_error = exc
+            details = f"Network error: {exc.reason}"
+        except TimeoutError as exc:
+            last_error = exc
+            details = "Request timed out"
+        except json.JSONDecodeError as exc:
+            last_error = exc
+            details = f"Server returned invalid JSON: {exc}"
+
+        if attempt + 1 < retries:
+            time.sleep(0.8 * (attempt + 1))
+
+    raise MnetPlusError(
+        f"Request failed after {retries} attempts.\nURL: {url}\n{details or last_error}"
+    )
 
 
 def get_video_info(video_id: str) -> dict[str, Any]:
@@ -200,6 +236,7 @@ def main(argv: list[str] | None = None) -> int:
     args = build_parser().parse_args(argv)
     try:
         video_id = extract_video_id(args.video)
+        print("Connecting to Mnet Plus...")
         info = get_video_info(video_id)
         configs = available_languages(info)
         caption_id = get_caption_id(info)
@@ -224,8 +261,10 @@ def main(argv: list[str] | None = None) -> int:
         base = safe_filename(title)
 
         for lang in langs:
-            print(f"Downloading {lang}...", file=sys.stderr)
+            print(f"Downloading {lang}...", flush=True)
             cues = download_language(video_id, caption_id, lang, duration_s)
+            if not cues:
+                print(f"Warning: no cues returned for {lang}.", file=sys.stderr)
             srt_path = out_dir / f"{base}.{lang}.srt"
             srt_path.write_text(to_srt(cues), encoding="utf-8")
             print(f"Saved {len(cues)} cues -> {srt_path}")
@@ -239,7 +278,9 @@ def main(argv: list[str] | None = None) -> int:
                 print(f"Saved JSON -> {json_path}")
         return 0
     except MnetPlusError as exc:
-        print(f"Error: {exc}", file=sys.stderr)
+        print("\n========== ERROR DETAILS ==========", file=sys.stderr)
+        print(str(exc), file=sys.stderr)
+        print("===================================", file=sys.stderr)
         return 2
 
 
