@@ -1,0 +1,9 @@
+[project]
+name = "mnetplus-subtitle-extractor"
+version = "0.1.0"
+description = "Export subtitle cues exposed by Mnet Plus public media APIs to SRT/JSON."
+requires-python = ">=3.10"
+license = "MIT"
+
+[project.scripts]
+mnetplus-subs = "mnetplus_subs:main"
