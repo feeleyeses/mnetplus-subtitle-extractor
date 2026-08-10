@@ -3,7 +3,7 @@
   "name": "Mnet Plus Subtitle Downloader",
   "version": "0.1.0",
   "description": "Detect available Mnet Plus subtitle tracks and export selected tracks as SRT.",
-  "permissions": ["activeTab", "downloads", "storage"],
+  "permissions": ["activeTab", "downloads", "storage", "scripting"],
   "host_permissions": [
     "https://mnetplus.world/*",
     "https://api.mnetplus.world/*"
