@@ -1,4 +1,33 @@
 <!doctype html>
-<html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Mnet Plus Subtitle Downloader</title><style>
-body{margin:0;width:400px;background:#111;color:#fff;font-family:Arial,"Microsoft YaHei",sans-serif}.wrap{padding:16px}h1{font-size:18px;margin:0 0 8px}.title{font-size:12px;line-height:1.5;color:#bbb;margin-bottom:12px;max-height:56px;overflow:auto}.track,.prepared-item{display:flex;gap:10px;align-items:flex-start;padding:10px 0;border-top:1px solid #2d2d2d}.track input,.prepared-item input{margin-top:3px}.label{font-size:14px}.meta{font-size:11px;color:#999;margin-top:3px}.ai{color:#ff72b2;margin-left:6px}.generated{color:#77d89b;margin-left:6px;font-size:11px}.status,.cache-hint,.confirm{margin-top:12px;padding:10px;background:#1c1c1c;border-radius:8px;font-size:12px;white-space:pre-wrap;line-height:1.5}.status{display:none}.cache-hint{color:#aaa;border:1px solid #292929}.cache-hint strong{color:#f4c96b}button{border:0;border-radius:10px;padding:10px;background:#ff1f8f;color:#fff;font-weight:700;cursor:pointer}button:disabled{opacity:.4;cursor:default}#prepare{width:100%;margin-top:14px}.error{color:#ff8a8a;font-size:12px;line-height:1.5;margin-top:8px}.section-head{display:flex;align-items:center;justify-content:space-between;margin:18px 0 6px}.section-title{font-size:13px;font-weight:700;color:#ddd}.clear-link{background:none;color:#aaa;padding:4px;font-size:11px}.empty{margin-top:14px;padding:10px;border:1px dashed #333;border-radius:9px;color:#777;font-size:12px}.prepared-body{flex:1;min-width:0}.filename{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:230px}.save-one{width:auto;flex:0 0 auto;padding:8px 12px;font-size:12px}.batch{display:flex;gap:8px;margin-top:10px}.batch button{flex:1;font-size:12px}.secondary{background:#333}.danger{background:#632a35}.hint{font-size:11px;line-height:1.5;color:#777;margin-top:10px}.confirm{color:#ddd}.confirm-actions{display:flex;gap:8px;margin-top:8px}.confirm-actions button{flex:1;padding:8px;font-size:12px}
-</style></head><body><div class="wrap"><h1>Mnet Plus 字幕下载</h1><div id="title" class="title">正在识别当前视频…</div><div id="tracks"></div><div id="status" class="status"></div><div id="error" class="error"></div><button id="prepare" disabled>生成选中字幕</button><div class="hint">字幕默认不勾选。选择需要的语言后先生成，再从临时资源区保存。</div><div id="prepared"></div></div><script src="popup.js"></script></body></html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Mnet Plus Subtitle Downloader</title>
+  <style>
+    body{margin:0;width:400px;background:#111;color:#fff;font-family:Arial,"Microsoft YaHei",sans-serif}.wrap{padding:16px}.topbar{display:flex;align-items:flex-start;justify-content:space-between;gap:12px}.topbar h1{font-size:18px;margin:0}.language-wrap{position:relative;flex:0 0 auto}.language-btn{background:none;border:1px solid #343434;color:#bbb;border-radius:8px;padding:6px 9px;font-size:11px;font-weight:600;cursor:pointer}.language-btn:hover{border-color:#555;color:#fff}.language-menu{position:absolute;right:0;top:34px;z-index:10;width:118px;background:#1b1b1b;border:1px solid #333;border-radius:9px;padding:5px;box-shadow:0 8px 24px rgba(0,0,0,.35)}.language-menu[hidden]{display:none}.language-option{display:block;width:100%;background:none;color:#bbb;text-align:left;padding:7px 8px;border:0;border-radius:6px;font-size:12px;font-weight:500;cursor:pointer}.language-option:hover{background:#292929;color:#fff}.language-option.active{color:#ff72b2}.title{font-size:12px;line-height:1.5;color:#bbb;margin:8px 0 12px;max-height:56px;overflow:auto}.track,.prepared-item{display:flex;gap:10px;align-items:flex-start;padding:10px 0;border-top:1px solid #2d2d2d}.track input,.prepared-item input{margin-top:3px}.label{font-size:14px}.meta{font-size:11px;color:#999;margin-top:3px}.ai{color:#ff72b2;margin-left:6px}.generated{color:#77d89b;margin-left:6px;font-size:11px}.status,.cache-hint,.confirm{margin-top:12px;padding:10px;background:#1c1c1c;border-radius:8px;font-size:12px;white-space:pre-wrap;line-height:1.5}.status{display:none}.cache-hint{color:#aaa;border:1px solid #292929}.cache-hint strong{color:#f4c96b}button{border:0;border-radius:10px;padding:10px;background:#ff1f8f;color:#fff;font-weight:700;cursor:pointer}button:disabled{opacity:.4;cursor:default}#prepare{width:100%;margin-top:14px}.error{color:#ff8a8a;font-size:12px;line-height:1.5;margin-top:8px}.section-head{display:flex;align-items:center;justify-content:space-between;margin:18px 0 6px}.section-title{font-size:13px;font-weight:700;color:#ddd}.clear-link{background:none;color:#aaa;padding:4px;font-size:11px}.empty{margin-top:14px;padding:10px;border:1px dashed #333;border-radius:9px;color:#777;font-size:12px}.prepared-body{flex:1;min-width:0}.filename{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:230px}.save-one{width:auto;flex:0 0 auto;padding:8px 12px;font-size:12px}.batch{display:flex;gap:8px;margin-top:10px}.batch button{flex:1;font-size:12px}.secondary{background:#333}.danger{background:#632a35}.hint{font-size:11px;line-height:1.5;color:#777;margin-top:10px}.confirm{color:#ddd}.confirm-actions{display:flex;gap:8px;margin-top:8px}.confirm-actions button{flex:1;padding:8px;font-size:12px}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="topbar">
+      <h1 id="app-title">Mnet Plus Subtitle Downloader</h1>
+      <div class="language-wrap">
+        <button id="language-btn" class="language-btn" type="button">Language ▾</button>
+        <div id="language-menu" class="language-menu" hidden>
+          <button class="language-option" data-lang="en" type="button">English</button>
+          <button class="language-option" data-lang="zh-CN" type="button">简体中文</button>
+        </div>
+      </div>
+    </div>
+    <div id="title" class="title">Detecting current video…</div>
+    <div id="tracks"></div>
+    <div id="status" class="status"></div>
+    <div id="error" class="error"></div>
+    <button id="prepare" disabled>Generate selected subtitles</button>
+    <div id="hint" class="hint">Nothing is selected by default. Choose the subtitle tracks you need, generate them first, then save them from the temporary resources section.</div>
+    <div id="prepared"></div>
+  </div>
+  <script src="popup.js"></script>
+</body>
+</html>
