@@ -1,0 +1,65 @@
+name: Package Chrome extension
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - "extension/**"
+      - ".github/workflows/package-extension.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  package:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Read extension version
+        id: version
+        shell: bash
+        run: |
+          VERSION=$(python -c "import json; print(json.load(open('extension/manifest.json'))['version'])")
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+
+      - name: Validate release files
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -f extension/manifest.json
+          test -f extension/popup.html
+          test -f extension/popup.js
+          test -f extension/content.js
+          test -f extension/icons/icon16.png
+          test -f extension/icons/icon32.png
+          test -f extension/icons/icon48.png
+          test -f extension/icons/icon128.png
+          python -m json.tool extension/manifest.json > /dev/null
+
+      - name: Build Chrome-ready ZIP
+        shell: bash
+        run: |
+          set -euo pipefail
+          VERSION="${{ steps.version.outputs.version }}"
+          mkdir -p dist/package/icons
+          cp extension/manifest.json dist/package/
+          cp extension/popup.html dist/package/
+          cp extension/popup.js dist/package/
+          cp extension/content.js dist/package/
+          cp extension/icons/icon16.png dist/package/icons/
+          cp extension/icons/icon32.png dist/package/icons/
+          cp extension/icons/icon48.png dist/package/icons/
+          cp extension/icons/icon128.png dist/package/icons/
+          cd dist/package
+          zip -r "../mnetplus-subtitle-downloader-v${VERSION}.zip" .
+
+      - name: Upload packaged extension
+        uses: actions/upload-artifact@v4
+        with:
+          name: mnetplus-subtitle-downloader-v${{ steps.version.outputs.version }}
+          path: dist/mnetplus-subtitle-downloader-v${{ steps.version.outputs.version }}.zip
+          if-no-files-found: error
+          retention-days: 30
