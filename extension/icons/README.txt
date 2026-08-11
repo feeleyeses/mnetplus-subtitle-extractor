@@ -1,0 +1,1 @@
+Binary icon assets are generated from the approved Concept C design. Do not edit these PNG files as text.
