@@ -6,6 +6,8 @@ Download official and AI-generated subtitle tracks from Mnet Plus videos and exp
 
 **No cookie copying. No HAR files. No developer tools.**
 
+**Install the extension and start downloading.**
+
 [简体中文](README.zh-CN.md)
 
 > **Recommended: Chrome extension.** The project is not currently published on the Chrome Web Store. For now, install it manually from this repository.
@@ -16,6 +18,7 @@ Download official and AI-generated subtitle tracks from Mnet Plus videos and exp
 - Detects the subtitle tracks actually available for that video instead of using a fixed language list.
 - Shows official and AI-generated subtitle tracks.
 - English / Simplified Chinese extension interface with automatic first-run language selection based on Chrome UI language.
+- Localized subtitle-language names that follow the extension interface language.
 - Leaves all subtitle tracks unselected by default.
 - Generates one or multiple selected subtitle tracks as SRT.
 - De-duplicates and sorts subtitle cues by time.
@@ -23,6 +26,7 @@ Download official and AI-generated subtitle tracks from Mnet Plus videos and exp
 - Supports individual save, multi-select save, multi-select delete, and clear-all.
 - If a system Save As dialog is cancelled, the generated subtitle remains available for another save attempt.
 - Clears the previous video's temporary cache when switching to another Mnet Plus video.
+- Automatically injects its page helper when needed, which makes locally updated builds more reliable on already-open Mnet Plus tabs.
 
 Different videos can expose completely different subtitle sets. One video may provide Korean, English, Japanese, Simplified Chinese and Traditional Chinese, while another may provide only some of them. The extension always follows the subtitle configuration returned for the current video.
 
@@ -156,7 +160,7 @@ The current video may not expose subtitle tracks, or Mnet Plus may have changed 
 
 ### Why does the extension say it cannot detect the page?
 
-Make sure you are on a Mnet Plus video page. If you have just updated the extension locally, reload the extension from `chrome://extensions/` and try again.
+Make sure you are on a Mnet Plus video page. If you have just updated the extension locally, reload the extension from `chrome://extensions/` and try again. Current builds can also inject the page helper on demand when a matching tab does not already have it.
 
 ### Why did my generated subtitles disappear?
 
