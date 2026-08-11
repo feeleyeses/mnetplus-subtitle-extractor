@@ -1,15 +1,27 @@
 {
   "manifest_version": 3,
   "name": "Mnet Plus Subtitle Downloader",
-  "version": "0.1.0",
+  "version": "1.0.0",
   "description": "Simple subtitle export for Mnet Plus.",
   "permissions": ["activeTab", "storage", "scripting"],
   "host_permissions": [
     "https://mnetplus.world/*",
     "https://api.mnetplus.world/*"
   ],
+  "icons": {
+    "16": "icons/icon16.png",
+    "32": "icons/icon32.png",
+    "48": "icons/icon48.png",
+    "128": "icons/icon128.png"
+  },
   "action": {
     "default_title": "Mnet Plus Subtitle Downloader",
+    "default_icon": {
+      "16": "icons/icon16.png",
+      "32": "icons/icon32.png",
+      "48": "icons/icon48.png",
+      "128": "icons/icon128.png"
+    },
     "default_popup": "popup.html"
   },
   "content_scripts": [
