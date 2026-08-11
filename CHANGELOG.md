@@ -2,7 +2,7 @@
 
 All notable changes to this project will be documented in this file.
 
-## [Unreleased]
+## [1.0.0] - 2026-08-12
 
 ### Added
 
@@ -19,12 +19,14 @@ All notable changes to this project will be documented in this file.
 - Chrome Web Store listing copy and permission justifications.
 - v1.0 release checklist.
 - Approved original **Concept C** visual identity: subtitle bubble + `CC` + `//`, deliberately distinct from the official Mnet Plus logo.
+- Final extension icon assets for 16, 32, 48, and 128 px.
 
 ### Changed
 
 - Updated the extension description to **“Simple subtitle export for Mnet Plus.”**
 - Reduced extension permissions by removing the unused `downloads` permission.
 - Prepared a larger-visual-weight Concept C toolbar icon set for better readability at 16–18 px.
+- Updated the extension manifest to version `1.0.0` and wired the final icon assets into both extension and toolbar icon fields.
 
 ### Fixed
 
