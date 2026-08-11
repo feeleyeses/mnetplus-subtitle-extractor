@@ -1,183 +1,213 @@
 # Mnet Plus Subtitle Downloader
 
-一个用于 **Mnet Plus 网页视频字幕导出** 的非官方工具。
+**Simple subtitle export for Mnet Plus.**
 
-它会读取当前视频实际提供的字幕轨，让用户自行选择需要的语言，抓取字幕 cue 并导出为标准 UTF-8 `.srt`。如果 Mnet Plus 标记某条字幕为 AI 自动生成，工具也会如实显示。
+Download official and AI-generated subtitle tracks from Mnet Plus videos and export them as standard UTF-8 `.srt` files.
 
-> **当前推荐方式：Chrome 扩展。** 目前尚未确定是否发布到 Chrome Web Store，因此现阶段通过 GitHub 下载后手动导入 Chrome 使用。
+**No cookie copying. No HAR files. No developer tools.**
 
-## 功能
+[简体中文](README.zh-CN.md)
 
-- 自动识别当前 Mnet Plus 视频
-- 自动识别当前视频实际提供的字幕语言，不写死语言列表
-- 显示 Mnet Plus 返回的语言名称及 AI 自动生成标记
-- 字幕默认不勾选，由用户自行选择
-- 多选生成字幕
-- 将字幕 cue 去重、按时间排序并转换为 SRT
-- 已生成字幕暂存在当前视频标签页中
-- 支持单个保存、多选保存、多选删除和清空缓存
-- 系统“另存为”窗口点取消后，可重新保存而无需重新抓取字幕
-- 切换到其他 Mnet Plus 视频时自动清除上一视频的临时字幕缓存
+> **Recommended: Chrome extension.** The project is not currently published on the Chrome Web Store. For now, install it manually from this repository.
 
-不同视频支持的字幕可能完全不同。例如某个视频可能提供韩语、英语、日语、简体中文和繁体中文，另一个视频可能只提供其中几种。本工具始终以 **当前视频实际返回的字幕配置** 为准。
+## Features
+
+- Automatically detects the current Mnet Plus video.
+- Detects the subtitle tracks actually available for that video instead of using a fixed language list.
+- Shows official and AI-generated subtitle tracks.
+- English / Simplified Chinese extension interface with automatic first-run language selection based on Chrome UI language.
+- Leaves all subtitle tracks unselected by default.
+- Generates one or multiple selected subtitle tracks as SRT.
+- De-duplicates and sorts subtitle cues by time.
+- Keeps generated subtitle files in temporary in-page cache before saving.
+- Supports individual save, multi-select save, multi-select delete, and clear-all.
+- If a system Save As dialog is cancelled, the generated subtitle remains available for another save attempt.
+- Clears the previous video's temporary cache when switching to another Mnet Plus video.
+
+Different videos can expose completely different subtitle sets. One video may provide Korean, English, Japanese, Simplified Chinese and Traditional Chinese, while another may provide only some of them. The extension always follows the subtitle configuration returned for the current video.
 
 ---
 
-## 方式一：自行导入 Chrome 扩展（当前推荐）
+## Installation
 
-Chrome Web Store 是否上架仍在评估中。在此之前，可以直接从本仓库安装扩展。
+### Option 1 — Load the Chrome extension manually (recommended)
 
-### 安装
-
-1. 点击 GitHub 仓库页面右上方 **Code → Download ZIP**。
-2. 将 ZIP 完整解压到一个固定文件夹。安装后不要随意删除或移动其中的 `extension/` 文件夹。
-3. 在 Chrome 地址栏打开：
+1. On this repository page, choose **Code → Download ZIP**.
+2. Extract the ZIP to a permanent folder. Do not delete or move the `extension/` folder after loading it into Chrome.
+3. Open:
 
 ```text
 chrome://extensions/
 ```
 
-4. 开启右上角 **开发者模式**。
-5. 点击 **加载已解压的扩展程序**。
-6. 选择解压目录中的：
+4. Turn on **Developer mode**.
+5. Click **Load unpacked**.
+6. Select the repository's:
 
 ```text
 extension/
 ```
 
-7. 建议将 **Mnet Plus Subtitle Downloader** 固定到 Chrome 工具栏。
+7. Optionally pin **Mnet Plus Subtitle Downloader** to the Chrome toolbar.
 
-以后仓库有更新时，替换本地 `extension/` 文件后，在 `chrome://extensions/` 中点击扩展的 **重新加载** 即可。
+When the repository is updated, replace your local extension files and click **Reload** on `chrome://extensions/`.
 
-### 使用
+### Option 2 — Chrome Web Store
 
-1. 正常登录 Mnet Plus。
-2. 打开你本人正常有权访问的 Mnet Plus 视频页面。
-3. 点击 Chrome 工具栏中的 **Mnet Plus Subtitle Downloader**。
-4. 扩展自动显示当前视频真实提供的字幕轨。
-5. 勾选需要的语言；所有语言默认均不勾选。
-6. 点击 **生成选中字幕**。
-7. 生成完成后，字幕会进入 **已准备好的字幕** 临时资源区。
-8. 可以单独保存，也可以多选保存 / 多选删除；不需要的临时资源可以清空。
+**Not currently available.** Whether this project will be published on the Chrome Web Store is still being evaluated.
 
-### 临时缓存注意事项
-
-生成字幕和保存字幕是两个步骤。生成后的 SRT 会暂存在 **当前视频标签页** 中，因此即使 Windows / Chrome 的“另存为”窗口里误点了 **取消**，字幕资源仍然存在，重新打开扩展即可再次保存。
-
-扩展内会提示缓存生命周期：
-
-> 已生成字幕暂存在当前视频标签页中。刷新页面、关闭该标签页、关闭浏览器，或切换到其他 Mnet Plus 视频后，缓存将被清除。请及时保存需要的字幕。
-
-如果缓存已经被清除，需要重新生成字幕。
+If a store version is released later, this section will be replaced with the official store link. Manual installation will remain useful for development and testing builds.
 
 ---
 
-## 方式二：Chrome Web Store
+## Usage
 
-**目前尚未上架，是否发布到 Chrome Web Store 仍在评估中。**
+1. Sign in to Mnet Plus normally.
+2. Open a Mnet Plus video that your account can normally access.
+3. Click **Mnet Plus Subtitle Downloader** in the Chrome toolbar.
+4. The extension detects the subtitle tracks available for the current video.
+5. Select the language(s) you want. Nothing is selected by default.
+6. Click **Generate selected subtitles**.
+7. Generated subtitles appear in the **Prepared subtitles** temporary resource area.
+8. Save a single subtitle, save multiple selected subtitles, delete selected resources, or clear all temporary resources.
 
-如果未来正式发布，本节会替换为商店安装链接。GitHub 手动导入方式仍可作为开发版 / 测试版安装方式保留。
+### Interface language
 
-在正式上架前，本项目还会继续完成发布准备，例如独立图标、权限审查、隐私说明、商店素材及发布包整理。
+The extension currently supports only:
+
+- English
+- 简体中文 (Simplified Chinese)
+
+On first use, a Chrome UI language of `zh-CN` defaults to Simplified Chinese. All other Chrome UI languages default to English. You can always change the interface from the fixed **Language** menu. Once manually changed, the preference is remembered locally.
+
+### Temporary cache
+
+Generating a subtitle and saving it are separate actions. Generated SRT files are temporarily stored in the **current video tab**, so cancelling a browser or system Save As dialog does not require generating the subtitle again.
+
+The cache is cleared when you:
+
+- refresh the current video page;
+- close the current tab;
+- close the browser; or
+- switch the same tab to another Mnet Plus video.
+
+Save any subtitle you want to keep before one of those actions.
 
 ---
 
-## 备用方式：Tampermonkey 用户脚本
+## What the extension does
 
-仓库仍保留：
+During normal use, the extension works only on matching Mnet Plus media pages. It:
+
+- identifies the current video and its subtitle configuration;
+- uses the Mnet Plus session already present in your browser to request subtitle data that your account can access;
+- converts subtitle cues selected by you into SRT;
+- temporarily keeps generated subtitle files in the current video tab; and
+- saves an SRT to your computer only when you explicitly choose to save it.
+
+## What the extension does not do
+
+- It does **not** provide, host, or bundle Mnet Plus videos or subtitle files.
+- It does **not** download video streams.
+- It does **not** bypass DRM, subscriptions, paywalls, geographic restrictions, or other technical access controls.
+- It does **not** grant access to content that your account cannot normally access.
+- It does **not** require you to manually copy cookies or authorization tokens.
+- It does **not** require HAR uploads.
+- It does **not** send your authentication credentials to the developer.
+- It does **not** build or provide a public subtitle archive.
+- It does **not** automatically crawl unrelated videos or bulk-download an entire catalog.
+
+This is an **unofficial project** and is not affiliated with, endorsed by, or sponsored by Mnet Plus or CJ ENM.
+
+---
+
+## Privacy
+
+The extension is designed to minimize the handling and exposure of authentication information.
+
+- You do not need to export HAR files.
+- You do not need to manually copy cookies or authorization tokens.
+- The extension uses the existing Mnet Plus session in the current browser tab only to communicate with Mnet Plus services required for subtitle retrieval.
+- Authentication information, browsing history, and subtitle contents are not sent to the developer or to a developer-operated server.
+- Generated subtitle files remain temporary in the current video tab unless you explicitly save them locally.
+- The only extension preference currently stored with `chrome.storage.local` is the selected interface language.
+
+See [PRIVACY.md](PRIVACY.md) for the full privacy statement.
+
+Never post screenshots, issue reports, or logs containing cookies, authorization tokens, or other session credentials.
+
+---
+
+## Limitations
+
+- The extension can export only subtitle tracks that Mnet Plus exposes for the current video.
+- A video with no available subtitle configuration cannot be exported by this tool.
+- Mnet Plus internal web APIs may change and can temporarily break the extension.
+- The extension does not download video content.
+- Temporary generated subtitles must be saved before their tab cache is cleared.
+
+---
+
+## FAQ
+
+### Why are no subtitles shown?
+
+The current video may not expose subtitle tracks, or Mnet Plus may have changed its internal subtitle API. Confirm that the video itself offers captions first.
+
+### Why does the extension say it cannot detect the page?
+
+Make sure you are on a Mnet Plus video page. If you have just updated the extension locally, reload the extension from `chrome://extensions/` and try again.
+
+### Why did my generated subtitles disappear?
+
+Generated subtitles are temporary resources stored in the current video tab. Refreshing the page, closing the tab or browser, or switching that tab to another Mnet Plus video clears them.
+
+### I cancelled the Save As dialog. Do I need to generate the subtitle again?
+
+No. If the page is still open and the temporary cache has not been cleared, reopen the extension and save the prepared subtitle again.
+
+### Why do different videos show different languages?
+
+Subtitle availability is defined by each Mnet Plus video. The extension does not force a fixed set of languages.
+
+---
+
+## Alternative: Tampermonkey userscript
+
+The repository still includes:
 
 ```text
 mnetplus_subtitle_downloader.user.js
 ```
 
-这是已经验证可用的 Tampermonkey 版本。它会在 Mnet Plus 视频页面中加入字幕下载入口。如果你不想手动加载 Chrome 扩展，也可以使用这一版本。
-
-安装时打开脚本 Raw 页面，让 Tampermonkey 接管安装即可：
-
-```text
-https://raw.githubusercontent.com/feeleyeses/mnetplus-subtitle-extractor/main/mnetplus_subtitle_downloader.user.js
-```
-
-目前产品体验和后续维护重点将以 **Chrome 扩展版** 为主。
+It is a previously validated Tampermonkey implementation that adds a subtitle download entry directly to Mnet Plus video pages. Development focus is now on the Chrome extension, but the userscript remains available as an alternative.
 
 ---
 
-## 这个扩展会做什么？
+## Development / legacy tools
 
-正常使用时，扩展只在匹配的 Mnet Plus 视频页面工作。它会：
+The repository also contains tools created during API research and debugging:
 
-- 识别当前视频 ID 和字幕配置
-- 使用当前浏览器中已有的 Mnet Plus 正常登录状态请求该视频字幕
-- 将用户主动选择的字幕转换为 SRT
-- 在当前视频标签页内临时保存已生成字幕，直到缓存生命周期结束
-- 仅在用户主动点击保存时，将 SRT 交给浏览器保存到本地
+- `browser_console_extractor.js` — DevTools Console version
+- `mnetplus_subs.py` — experimental Python CLI
+- `download_subtitles.ps1` / `download_subtitles.bat` — experimental Windows launchers
 
-## 这个扩展不会做什么？
+These methods may not reuse the browser's active Mnet Plus session as reliably as the extension, so they are **not recommended for normal users**.
 
-- **不会提供、托管或附带 Mnet Plus 视频或字幕文件**
-- **不会下载视频本体**
-- **不会绕过 DRM、付费墙、地区限制或其他技术访问控制**
-- **不会让用户访问其账号原本无权访问的内容**
-- **不会要求用户手动复制 Cookie 或 Authorization token**
-- **不会要求用户上传 HAR 文件**
-- **不会把登录令牌写入导出的 SRT**
-- **不会建立或提供公共字幕资源库**
-- **不会自动替用户选择或批量抓取其他视频的字幕**
-
-本项目与 Mnet Plus / CJ ENM **无官方关联、无授权背书关系**。
+Extension-specific notes are available in `extension/README.md`.
 
 ---
 
-## 工作原理
+## Usage and copyright notice
 
-Mnet Plus 网页播放器会读取视频元数据，其中包含视频 ID、时长、`videoCaptionId`、字幕语言配置以及部分字幕的 AI 自动生成标记。
+This project is intended primarily for personal learning, language study, accessibility research, subtitle research, and technical learning.
 
-扩展在用户已经正常登录并有权访问该视频的浏览器环境中，根据当前视频字幕配置请求对应 caption cue，将用户主动选择的字幕按时间整理并转换为 SRT。
-
-这些接口属于 Mnet Plus 网页内部实现细节，未来可能变化。如果网站更新导致工具失效，可以通过 GitHub Issue 反馈。
-
----
-
-## 隐私与安全
-
-本工具的设计原则是尽量减少用户需要处理认证信息的情况。正常使用 Chrome 扩展时：
-
-- 不需要导出 HAR
-- 不需要复制 Cookie
-- 不需要把 Authorization token 提供给开发者或其他第三方
-- 字幕处理发生在用户当前的 Mnet Plus 页面 / 浏览器环境中
-- 已生成字幕只作为当前视频标签页中的临时资源存在，除非用户主动保存到本地
-
-请勿在 Issue、截图或其他公开场合分享包含 Cookie、Authorization token 或其他会话凭证的信息。
-
-正式申请 Chrome Web Store 上架前，本项目将进一步整理独立的隐私说明和权限披露。
-
----
-
-## 使用范围与版权声明
-
-**本项目主要用于个人学习、语言学习、字幕研究、可访问性研究及技术学习。**
-
-- 字幕、节目、视频、商标及相关知识产权归各自权利人所有。
-- 请仅处理你本人正常有权访问的内容。
-- 请勿使用本工具批量转载、重新发布、出售、商业分发字幕，或建立未经授权的字幕资源库。
-- 下载、保存和使用字幕前，请自行确认使用方式符合适用的服务条款、当地法律及相关权利人的要求。
-- 本工具不授予任何第三方视频、字幕、节目或商标的使用权。
-
----
-
-## 开发 / 调试文件
-
-仓库还保留开发过程中使用过的工具，主要用于接口研究和维护：
-
-- `browser_console_extractor.js` — DevTools Console 版本
-- `mnetplus_subs.py` — Python CLI 实验版
-- `download_subtitles.ps1` / `download_subtitles.bat` — Windows 实验入口
-
-这些方式可能无法像浏览器扩展一样稳定复用当前登录环境，因此 **不作为普通用户推荐安装方式**。
-
-扩展自身的更详细说明见 `extension/README.md`。
+- Videos, subtitles, programs, trademarks, and related intellectual property belong to their respective rights holders.
+- Use the tool only with content you are normally authorized to access.
+- Do not use it to create unauthorized subtitle archives, resell subtitle files, or mass-republish protected content.
+- You are responsible for ensuring that your use complies with applicable service terms, local law, and third-party rights.
+- This project grants no rights to Mnet Plus or other third-party content, programs, subtitles, or trademarks.
 
 ## License
 
-代码使用 MIT License。MIT License **仅适用于本仓库源代码**，不授予任何 Mnet Plus 或其他第三方视频、字幕、节目、商标及内容的权利。
+Source code in this repository is licensed under the [MIT License](LICENSE). The license applies only to this project's source code and does not grant rights to any third-party content.
