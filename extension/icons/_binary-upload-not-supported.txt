@@ -1,1 +1,0 @@
-Binary PNG upload will be handled in the packaged extension build.
