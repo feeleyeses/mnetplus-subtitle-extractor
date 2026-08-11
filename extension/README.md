@@ -1,102 +1,126 @@
 # Mnet Plus Subtitle Downloader — Chrome Extension
 
-这是本项目当前主要维护的 Chrome 扩展版本，基于 **Manifest V3**。
+[简体中文](README.zh-CN.md)
 
-> 当前状态：可通过 GitHub 手动导入使用；**尚未发布到 Chrome Web Store，是否上架仍在评估中。**
+This is the primary Chrome extension maintained by the project. It uses **Manifest V3**.
 
-## 手动安装
+> Current status: available for manual installation from GitHub. It is **not currently published on the Chrome Web Store**, and store publication is still being evaluated.
 
-1. 下载或 clone 整个仓库。
-2. 完整解压，并保留 `extension/` 文件夹。
-3. Chrome 打开 `chrome://extensions/`。
-4. 开启右上角「开发者模式」。
-5. 点击「加载已解压的扩展程序」。
-6. 选择本仓库的 `extension/` 文件夹。
-7. 建议把扩展固定到浏览器工具栏。
+## Manual installation
 
-更新本地扩展文件后，请在 `chrome://extensions/` 中点击该扩展的「重新加载」。
+1. Download or clone the full repository.
+2. Extract it to a permanent folder and keep the `extension/` directory in place.
+3. Open `chrome://extensions/` in Chrome.
+4. Enable **Developer mode**.
+5. Click **Load unpacked**.
+6. Select this repository's `extension/` folder.
+7. Optionally pin the extension to the Chrome toolbar.
 
-## 使用
+After updating local extension files, click **Reload** on `chrome://extensions/`.
 
-1. 正常登录 Mnet Plus。
-2. 打开一个你本人正常有权访问的 Mnet Plus 视频页面。
-3. 点击工具栏里的 **Mnet Plus Subtitle Downloader**。
-4. 扩展读取当前视频真实提供的字幕轨。
-5. 所有字幕默认均不勾选；自行选择需要的语言。
-6. 点击「生成选中字幕」。
-7. 字幕抓取、去重并转换为 SRT 后，会进入「已准备好的字幕」临时资源区。
-8. 可单独保存，也可多选保存、多选删除或清空全部临时字幕。
+## Interface language
 
-## 临时字幕缓存
+The extension supports:
 
-扩展兼容 Chrome 的「每次下载前询问保存位置」。
+- English
+- 简体中文 (Simplified Chinese)
 
-生成字幕后不会立即把资源丢掉。因此：
+On first use, Chrome UI language `zh-CN` defaults to Simplified Chinese. Every other Chrome UI language defaults to English. The **Language** button always remains visible in English so users can find the language switch easily. A manual choice is stored locally and reused next time.
 
-- 在系统「另存为」窗口点击「取消」，已经生成的字幕仍会保留。
-- 重新打开扩展后，可以再次点击「保存」。
-- 不需要因为误点取消而重新抓取整段视频字幕。
+Subtitle-language names and AI-generated labels follow the selected interface language.
 
-扩展中的准确提示为：
+## Usage
 
-> 已生成字幕暂存在当前视频标签页中。刷新页面、关闭该标签页、关闭浏览器，或切换到其他 Mnet Plus 视频后，缓存将被清除。请及时保存需要的字幕。
+1. Sign in to Mnet Plus normally.
+2. Open a Mnet Plus video your account can normally access.
+3. Click **Mnet Plus Subtitle Downloader** in the toolbar.
+4. The extension reads the subtitle tracks actually available for that video.
+5. Nothing is selected by default. Choose the subtitle language(s) you need.
+6. Click **Generate selected subtitles**.
+7. The extension retrieves, de-duplicates, sorts, and converts subtitle cues to SRT.
+8. Generated files appear in the **Prepared subtitles** temporary resource area.
+9. Save individually, save multiple selected files, delete selected resources, or clear all.
 
-当扩展检测到当前标签页切换到另一个 Mnet Plus 视频 ID 时，也会主动清除上一视频的临时缓存，避免不同视频的字幕资源混在一起。
+## Temporary subtitle cache
 
-## 字幕轨
+The extension works with Chrome's **Ask where to save each file before downloading** setting.
 
-扩展不会预设固定语言组合，而是读取当前视频元数据中的 `languageConfigs`。不同视频可能出现不同字幕，例如 `ko`、`en`、`ja`、`zh_CN`、`zh_TW` 或其他语言。
+Generating and saving are separate actions. If you cancel the system Save As dialog, the generated subtitle remains available as long as the temporary cache still exists.
 
-如果 Mnet Plus 给某条轨道返回 AI 自动生成标记，扩展会如实显示。所有轨道默认不勾选。
+The cache is cleared when you:
 
-## 功能状态
+- refresh the current video page;
+- close the current tab;
+- close the browser; or
+- switch the same tab to another Mnet Plus video.
 
-目前已经实现：
+When the video ID changes, the extension also clears the previous video's cache to prevent files from different videos being mixed together.
+
+## Subtitle tracks
+
+The extension does not assume a fixed language list. It reads the current video's subtitle configuration and may show tracks such as `ko`, `en`, `ja`, `zh_CN`, `zh_TW`, `id`, or others depending on that video.
+
+If Mnet Plus marks a track as AI-generated, the extension displays that status. All tracks remain unselected until the user chooses them.
+
+## Reliability fallback
+
+The extension normally uses a content script on Mnet Plus media pages. If the popup cannot reach the active page helper—for example after a local extension reload while the tab was already open—it can inject `content.js` into the supported page and retry automatically.
+
+This requires the Manifest V3 `scripting` permission and is limited to supported Mnet Plus pages.
+
+## Implemented features
 
 - Manifest V3
-- Mnet Plus 视频页 content script
-- 浏览器工具栏 popup
-- 自动识别当前视频及字幕轨
-- AI 自动生成标记展示
-- 字幕轨默认不勾选
-- 多选生成
-- 下载 / 生成进度
-- SRT 转换
-- 当前视频标签页临时缓存
-- 单文件保存
-- 多选保存
-- 多选删除
-- 清空全部（扩展内二次确认）
-- 保存窗口取消后重新保存
-- 视频 ID 改变时自动清理旧缓存
+- Mnet Plus media-page content script
+- Browser toolbar popup
+- English / Simplified Chinese interface
+- Chrome UI language detection on first use
+- Persistent manual language preference
+- Localized subtitle-language labels
+- Automatic video and subtitle-track detection
+- AI-generated subtitle labels
+- No default subtitle selection
+- Multi-track generation
+- Progress display
+- SRT conversion
+- Temporary per-video tab cache
+- Individual save
+- Multi-select save
+- Multi-select delete
+- Clear-all with in-popup confirmation
+- Re-save after cancelling the system Save As dialog
+- Automatic cache cleanup when the video ID changes
+- Automatic content-script injection fallback
 
-## 安全与边界
+## Security and boundaries
 
-扩展只在匹配的 Mnet Plus 视频页面工作，并使用当前浏览器已有的正常登录状态请求当前视频字幕。
+The extension uses the signed-in Mnet Plus session already present in the browser to request subtitle data for the current video.
 
-扩展不会：
+It does **not**:
 
-- 提供或托管视频 / 字幕内容
-- 下载视频本体
-- 绕过 DRM、付费墙、地区限制或其他技术访问控制
-- 让用户访问账号原本无权访问的内容
-- 要求用户手动提供 Cookie、Authorization token 或 HAR
-- 将认证信息写入导出的 SRT
+- provide or host video/subtitle content;
+- download video streams;
+- bypass DRM, subscriptions, paywalls, geographic restrictions, or other access controls;
+- grant access to content the user's account cannot normally access;
+- ask the user to manually provide cookies, authorization tokens, or HAR files;
+- send authentication information to the developer; or
+- put authentication information into exported SRT files.
 
-请勿在公开 Issue 或截图中分享 Cookie、Authorization token 或其他会话凭证。
+Do not share cookies, authorization tokens, or other session credentials in public issues, screenshots, or logs.
 
-本扩展与 Mnet Plus / CJ ENM 无官方关联。使用范围与版权声明详见仓库根目录 `README.md`。
+This extension is unofficial and is not affiliated with Mnet Plus or CJ ENM. See the repository root README and `PRIVACY.md` for the full usage, privacy, and copyright notes.
 
 ## Chrome Web Store
 
-目前没有商店版本。是否上架仍在评估中。
+There is currently no store version. Whether the extension will be published on the Chrome Web Store is still being evaluated.
 
-正式发布前计划至少完成：
+Before a store release, the project still plans to complete or verify:
 
-- 独立扩展图标与商店视觉素材
-- Manifest 权限复核
-- 独立隐私政策 / 数据处理说明
-- 发布版本号和 ZIP 包整理
-- Chrome Web Store listing 文案与截图
+- final extension icon assets;
+- final Manifest permission review;
+- Chrome Web Store listing copy;
+- store screenshots and visual assets;
+- release ZIP packaging; and
+- final privacy disclosure review.
 
-在商店版出现前，请以本仓库中的 `extension/` 为准。
+Until then, use the `extension/` directory from this repository as the source of truth.
