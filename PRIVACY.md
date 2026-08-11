@@ -1,5 +1,7 @@
 # Privacy Policy
 
+[简体中文](PRIVACY.zh-CN.md)
+
 Mnet Plus Subtitle Downloader is an unofficial browser extension that exports subtitle tracks already available to the signed-in user on Mnet Plus.
 
 ## Data handling
