@@ -1,25 +1,53 @@
-const titleEl=document.getElementById('title'),tracksEl=document.getElementById('tracks'),preparedEl=document.getElementById('prepared'),statusEl=document.getElementById('status'),errorEl=document.getElementById('error'),prepareBtn=document.getElementById('prepare'),hintEl=document.getElementById('hint'),languageBtn=document.getElementById('language-btn'),languageMenu=document.getElementById('language-menu');
-let activeTabId=null,currentInfo=null,preparedItems=[],currentLang='en';
+const titleEl=document.getElementById('title'),tracksEl=document.getElementById('tracks'),preparedEl=document.getElementById('prepared'),statusEl=document.getElementById('status'),errorEl=document.getElementById('error'),prepareBtn=document.getElementById('prepare'),hintEl=document.getElementById('hint'),languageBtn=document.getElementById('language-btn'),languageMenu=document.getElementById('language-menu'),appTitleEl=document.getElementById('app-title');
+let activeTabId=null,currentInfo=null,preparedItems=[],currentLang='en',localeMessages={};
 
-const messages={
-  en:{
-    detecting:'Detecting current video…',unknownError:'An unknown error occurred.',noActiveTab:'Unable to access the current tab.',operationFailed:'Operation failed.',generated:'✓ Generated',prepare:'Generate selected subtitles',baseHint:'Nothing is selected by default. Choose the subtitle tracks you need, generate them first, then save them from the temporary resources section.',empty:'No subtitle resources have been generated yet.',preparedTitle:'Prepared subtitles',clearAll:'Clear all',cacheTitle:'Temporary cache',cacheHint:'Generated subtitles are temporarily stored in the current video tab. Refreshing the page, closing this tab or browser, or switching to another Mnet Plus video will clear the cache. Save any subtitles you need in time.',items:n=>`${n} items`,save:'Save',saveStarted:f=>`Save started: ${f}\nIf you cancel the system save dialog, the resource will remain available and can be saved again.`,saveSelected:'Save selected',deleteSelected:'Delete selected',saveSelectedN:n=>`Save selected (${n})`,deleteSelectedN:n=>`Delete selected (${n})`,batchSave:n=>`Started saving ${n} subtitle file(s). Cancelling a system save dialog will not delete the temporary resource.`,batchDelete:n=>`Deleted ${n} subtitle file(s) from the temporary cache.`,clearConfirm:n=>`Clear all ${n} generated subtitle file(s)?<br>You will need to generate them again after clearing.`,cancel:'Cancel',confirmClear:'Clear all',cacheCleared:'Temporary subtitle cache cleared.',progress:(l,d,t,c)=>`Generating ${l}…\n${d}/${t} sec · ${c} subtitle items collected`,wrongPage:'Open an Mnet Plus video page first, then click the extension.',unrecognized:'Unable to detect the current page',chooseOne:'Select at least one subtitle track.',generating:ls=>`Generating: ${ls}`,replacing:(ls,r)=>`Generating: ${ls}\nExisting cache for ${r} will be regenerated and replaced.`,complete:'Generation complete. Subtitles are now in the temporary resources section below, where you can save them individually or use batch actions.',incomplete:'Subtitle generation did not complete.',aiGenerated:'AI-generated'
-  },
-  'zh-CN':{
-    detecting:'正在识别当前视频…',unknownError:'发生未知错误。',noActiveTab:'无法读取当前标签页。',operationFailed:'操作失败。',generated:'✓ 已生成',prepare:'生成选中字幕',baseHint:'字幕默认不勾选。选择需要的语言后先生成，再从临时资源区保存。',empty:'尚未生成字幕资源。',preparedTitle:'已准备好的字幕',clearAll:'清空全部',cacheTitle:'临时缓存',cacheHint:'已生成字幕暂存在当前视频标签页中。刷新页面、关闭该标签页、关闭浏览器，或切换到其他 Mnet Plus 视频后，缓存将被清除。请及时保存需要的字幕。',items:n=>`${n} 条`,save:'保存',saveStarted:f=>`已发起保存：${f}\n如果在系统保存窗口点了“取消”，资源仍保留，可再次保存。`,saveSelected:'保存选中',deleteSelected:'删除选中',saveSelectedN:n=>`保存选中（${n}）`,deleteSelectedN:n=>`删除选中（${n}）`,batchSave:n=>`已发起 ${n} 个字幕的保存。取消任一系统保存窗口不会删除临时资源。`,batchDelete:n=>`已从临时缓存删除 ${n} 个字幕。`,clearConfirm:n=>`确定清空全部 ${n} 个已生成字幕吗？<br>清空后需要重新生成。`,cancel:'取消',confirmClear:'确认清空',cacheCleared:'临时字幕缓存已清空。',progress:(l,d,t,c)=>`正在生成 ${l}…\n${d}/${t} 秒 · 已收集 ${c} 条字幕`,wrongPage:'请先打开一个 Mnet Plus 视频页面，再点击扩展。',unrecognized:'无法识别当前页面',chooseOne:'请至少选择一种字幕。',generating:ls=>`正在生成：${ls}`,replacing:(ls,r)=>`正在生成：${ls}\n其中 ${r} 已有缓存，将重新生成并替换。`,complete:'生成完成。字幕已放入下方临时资源区，可单独保存或多选操作。',incomplete:'字幕生成未完成。',aiGenerated:'AI 自动生成'
+const localeFolder=lang=>lang==='zh-CN'?'zh_CN':'en';
+async function loadLocaleMessages(lang){
+  const url=chrome.runtime.getURL(`_locales/${localeFolder(lang)}/messages.json`);
+  const response=await fetch(url,{cache:'no-store'});
+  if(!response.ok)throw new Error(`Unable to load locale: ${lang}`);
+  localeMessages=await response.json();
+}
+function formatLocaleEntry(entry,args){
+  if(!entry)return '';
+  let text=String(entry.message||'');
+  const placeholders=entry.placeholders||{};
+  for(const [name,meta] of Object.entries(placeholders)){
+    const match=String(meta.content||'').match(/^\$(\d+)$/);
+    const value=match?args[Number(match[1])-1]:'';
+    text=text.replace(new RegExp(`\\$${name}\\$`,'gi'),String(value??''));
   }
-};
-const trackNames={
-  en:{ko:'Korean',en:'English',ja:'Japanese',zh_CN:'Chinese (Simplified)',zh_TW:'Chinese (Traditional)',id:'Indonesian'},
-  'zh-CN':{ko:'韩国语',en:'英语',ja:'日本语',zh_CN:'中文 简体',zh_TW:'中文 繁体',id:'印度尼西亚语'}
-};
-const t=(key,...args)=>{const value=messages[currentLang]?.[key]??messages.en[key]??key;return typeof value==='function'?value(...args):value;};
-const trackLabel=(language,fallback='')=>trackNames[currentLang]?.[language]||trackNames.en[language]||fallback||language;
+  return text;
+}
+const t=(key,...args)=>formatLocaleEntry(localeMessages[key],args)||key;
+const trackKeyMap={ko:'trackKo',en:'trackEn',ja:'trackJa',zh_CN:'trackZhCN',zh_TW:'trackZhTW',id:'trackId'};
+const trackLabel=(language,fallback='')=>{const key=trackKeyMap[language];return key?t(key):(fallback||language);};
 const showError=m=>errorEl.textContent=m||t('unknownError'),clearError=()=>errorEl.textContent='',showStatus=m=>{statusEl.style.display='block';statusEl.textContent=m;},clearStatus=()=>{statusEl.style.display='none';statusEl.textContent='';};
 
-async function loadLanguage(){const stored=await chrome.storage.local.get('uiLanguage');if(stored.uiLanguage==='en'||stored.uiLanguage==='zh-CN')return stored.uiLanguage;return chrome.i18n.getUILanguage().toLowerCase()==='zh-cn'?'zh-CN':'en';}
-async function setLanguage(lang){currentLang=lang==='zh-CN'?'zh-CN':'en';await chrome.storage.local.set({uiLanguage:currentLang});applyLanguage();}
-function applyLanguage(){document.documentElement.lang=currentLang;prepareBtn.textContent=t('prepare');hintEl.textContent=t('baseHint');document.querySelectorAll('.language-option').forEach(x=>{x.classList.toggle('active',x.dataset.lang===currentLang);x.textContent=(x.dataset.lang===currentLang?'✓ ':'')+(x.dataset.lang==='en'?'English':'简体中文');});if(currentInfo){renderTracks(currentInfo);renderPrepared(preparedItems);}else if(!titleEl.textContent||titleEl.textContent==='Detecting current video…'||titleEl.textContent==='正在识别当前视频…')titleEl.textContent=t('detecting');}
+async function loadLanguage(){
+  const stored=await chrome.storage.local.get('uiLanguage');
+  if(stored.uiLanguage==='en'||stored.uiLanguage==='zh-CN')return stored.uiLanguage;
+  return chrome.i18n.getUILanguage().toLowerCase()==='zh-cn'?'zh-CN':'en';
+}
+async function setLanguage(lang){
+  currentLang=lang==='zh-CN'?'zh-CN':'en';
+  await chrome.storage.local.set({uiLanguage:currentLang});
+  await loadLocaleMessages(currentLang);
+  applyLanguage();
+}
+function applyLanguage(){
+  document.documentElement.lang=currentLang;
+  document.title=t('appName');
+  appTitleEl.textContent=t('appName');
+  prepareBtn.textContent=t('prepare');
+  hintEl.textContent=t('baseHint');
+  document.querySelectorAll('.language-option').forEach(x=>{
+    x.classList.toggle('active',x.dataset.lang===currentLang);
+    x.textContent=(x.dataset.lang===currentLang?'✓ ':'')+(x.dataset.lang==='en'?'English':'简体中文');
+  });
+  if(currentInfo){renderTracks(currentInfo);renderPrepared(preparedItems);}
+  else titleEl.textContent=t('detecting');
+}
 languageBtn.addEventListener('click',e=>{e.stopPropagation();languageMenu.hidden=!languageMenu.hidden;});
 document.addEventListener('click',()=>languageMenu.hidden=true);
 document.querySelectorAll('.language-option').forEach(option=>option.addEventListener('click',async e=>{e.stopPropagation();languageMenu.hidden=true;await setLanguage(option.dataset.lang);}));
@@ -40,5 +68,14 @@ const batch=document.createElement('div');batch.className='batch';const saveSele
 clear.onclick=()=>{if(document.getElementById('clear-confirm'))return;const box=document.createElement('div');box.id='clear-confirm';box.className='confirm';box.innerHTML=t('clearConfirm',preparedItems.length);const actions=document.createElement('div');actions.className='confirm-actions';const cancel=document.createElement('button');cancel.className='secondary';cancel.textContent=t('cancel');cancel.onclick=()=>box.remove();const yes=document.createElement('button');yes.className='danger';yes.textContent=t('confirmClear');yes.onclick=async()=>{try{const r=await send('MNET_SUB_CLEAR_PREPARED');renderPrepared(r.prepared);showStatus(t('cacheCleared'));}catch(e){showError(e.message);}};actions.append(cancel,yes);box.appendChild(actions);head.after(box);};if(currentInfo)renderTracks(currentInfo);}
 chrome.runtime.onMessage.addListener(message=>{if(message?.type==='MNET_SUB_PROGRESS')showStatus(t('progress',message.language,message.done,message.total,message.count));});
 
-(async()=>{currentLang=await loadLanguage();applyLanguage();try{const tab=await getActiveTab();activeTabId=tab.id;if(!/^https:\/\/(?:www\.)?mnetplus\.world\/media\//i.test(tab.url||'')||!String(tab.url).includes('/videos/'))throw new Error(t('wrongPage'));const r=await send('MNET_SUB_GET_INFO');currentInfo=r.info;preparedItems=r.prepared||[];renderTracks(currentInfo);renderPrepared(preparedItems);}catch(e){titleEl.textContent=t('unrecognized');showError(e.message);prepareBtn.disabled=true;}})();
+(async()=>{
+  currentLang=await loadLanguage();
+  await loadLocaleMessages(currentLang);
+  applyLanguage();
+  try{
+    const tab=await getActiveTab();activeTabId=tab.id;
+    if(!/^https:\/\/(?:www\.)?mnetplus\.world\/media\//i.test(tab.url||'')||!String(tab.url).includes('/videos/'))throw new Error(t('wrongPage'));
+    const r=await send('MNET_SUB_GET_INFO');currentInfo=r.info;preparedItems=r.prepared||[];renderTracks(currentInfo);renderPrepared(preparedItems);
+  }catch(e){titleEl.textContent=t('unrecognized');showError(e.message);prepareBtn.disabled=true;}
+})();
 prepareBtn.addEventListener('click',async()=>{const languages=[...document.querySelectorAll('#tracks input[type="checkbox"]:checked')].map(x=>x.value);if(!languages.length){showError(t('chooseOne'));return;}const replacing=languages.filter(l=>preparedItems.some(x=>x.language===l));clearError();prepareBtn.disabled=true;showStatus(replacing.length?t('replacing',languages.join(', '),replacing.join(', ')):t('generating',languages.join(', ')));try{const r=await send('MNET_SUB_PREPARE',{languages});renderPrepared(r.prepared||[]);showStatus(t('complete'));}catch(e){showError(e.message);showStatus(t('incomplete'));}finally{prepareBtn.disabled=false;}});
