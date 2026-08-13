@@ -2,6 +2,21 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.1.0] - 2026-08-13
+
+### Added
+
+- Chrome-standard internationalization resources under `_locales/en` and `_locales/zh_CN`.
+- Localized extension name, description, and toolbar title through `__MSG_...__` manifest placeholders.
+- English and Simplified Chinese locale resources for popup UI copy and subtitle-language labels.
+
+### Changed
+
+- Migrated popup user-facing strings out of the JavaScript source and into Chrome locale resource files.
+- Kept the in-extension **Language** menu so users can manually switch between English and Simplified Chinese regardless of Chrome UI language.
+- Updated the packaging workflow to validate and include `_locales` in Chrome-ready ZIP artifacts.
+- Bumped the extension version to `1.1.0`.
+
 ## [1.0.0] - 2026-08-12
 
 ### Added
