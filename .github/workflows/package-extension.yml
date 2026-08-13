@@ -37,14 +37,18 @@ jobs:
           test -f extension/icons/icon32.png
           test -f extension/icons/icon48.png
           test -f extension/icons/icon128.png
+          test -f extension/_locales/en/messages.json
+          test -f extension/_locales/zh_CN/messages.json
           python -m json.tool extension/manifest.json > /dev/null
+          python -m json.tool extension/_locales/en/messages.json > /dev/null
+          python -m json.tool extension/_locales/zh_CN/messages.json > /dev/null
 
       - name: Build Chrome-ready ZIP
         shell: bash
         run: |
           set -euo pipefail
           VERSION="${{ steps.version.outputs.version }}"
-          mkdir -p dist/package/icons
+          mkdir -p dist/package/icons dist/package/_locales/en dist/package/_locales/zh_CN
           cp extension/manifest.json dist/package/
           cp extension/popup.html dist/package/
           cp extension/popup.js dist/package/
@@ -53,6 +57,8 @@ jobs:
           cp extension/icons/icon32.png dist/package/icons/
           cp extension/icons/icon48.png dist/package/icons/
           cp extension/icons/icon128.png dist/package/icons/
+          cp extension/_locales/en/messages.json dist/package/_locales/en/
+          cp extension/_locales/zh_CN/messages.json dist/package/_locales/zh_CN/
           cd dist/package
           zip -r "../mnetplus-subtitle-downloader-v${VERSION}.zip" .
 
